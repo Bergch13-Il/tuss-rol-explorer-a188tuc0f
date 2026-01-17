@@ -1,0 +1,70 @@
+import { TussItem, CbhpmItem } from './types'
+
+export const MOCK_TUSS_DATA: TussItem[] = [
+  {
+    code: '31001017',
+    term: 'Atendimento ao recém-nascido em sala de parto (parto normal ou operatório de baixo risco)',
+    startDate: '01/01/2020',
+    endDate: '',
+    dut: 'Sim',
+    subGroup: 'Parto e Puerpério',
+    group: 'Procedimentos Clínicos',
+    chapter: 'Procedimentos Gerais',
+    rollStatus: 'RN (Rol de Procedimentos)',
+    segmentation: ['AMB', 'HCO'],
+  },
+  {
+    code: '40304361',
+    term: 'Ferritina - pesquisa e/ou dosagem',
+    startDate: '01/06/2021',
+    endDate: '',
+    dut: 'Não',
+    subGroup: 'Bioquímica',
+    group: 'Exames Laboratoriais',
+    chapter: 'Diagnóstico por Laboratório Clínico',
+    rollStatus: 'RN',
+    segmentation: ['AMB'],
+  },
+  {
+    code: '30201012',
+    term: 'Biópsia de pele e partes moles',
+    startDate: '01/01/2018',
+    endDate: '',
+    dut: 'Sim',
+    subGroup: 'Pele e Tecido Celular Subcutâneo',
+    group: 'Procedimentos Cirúrgicos',
+    chapter: 'Pele e Anexos',
+    rollStatus: 'RN',
+    segmentation: ['AMB', 'HSO'],
+  },
+]
+
+export const MOCK_CBHPM_DATA: CbhpmItem[] = [
+  {
+    code: '3.10.01.01-7',
+    term: 'Atendimento ao recém-nascido em sala de parto',
+    porte: '2B',
+    uco: '0.00',
+    aux: '0',
+    anest: '0',
+    filme: '0.00',
+  },
+  {
+    code: '4.03.04.36-1',
+    term: 'Ferritina',
+    porte: '0.01',
+    uco: '0.30',
+    aux: '0',
+    anest: '0',
+    filme: '0.00',
+  },
+  {
+    code: '3.02.01.01-2',
+    term: 'Biópsia de pele, tumores superficiais, tecido celular subcutâneo, gânglios linfáticos, etc',
+    porte: '2A',
+    uco: '0.00',
+    aux: '0',
+    anest: '0',
+    filme: '0.00',
+  },
+]
