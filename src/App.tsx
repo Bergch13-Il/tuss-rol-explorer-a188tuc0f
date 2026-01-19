@@ -1,12 +1,14 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from '@/components/ui/toaster'
 import { Toaster as Sonner } from '@/components/ui/sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import Index from './pages/Index'
 import ChatPage from './pages/ChatPage'
-import ConnectionPage from './pages/ConnectionPage'
+import AdminPage from './pages/AdminPage'
+import LoginPage from './pages/LoginPage'
 import NotFound from './pages/NotFound'
 import Layout from './components/Layout'
+import { RequireAuth } from './components/RequireAuth'
 
 const App = () => (
   <BrowserRouter
@@ -16,11 +18,27 @@ const App = () => (
       <Toaster />
       <Sonner />
       <Routes>
-        <Route element={<Layout />}>
-          <Route path="/" element={<Index />} />
-          <Route path="/chat" element={<ChatPage />} />
-          <Route path="/connection" element={<ConnectionPage />} />
+        <Route path="/login" element={<LoginPage />} />
+
+        {/* Protected Routes for All Users */}
+        <Route element={<RequireAuth />}>
+          <Route element={<Layout />}>
+            <Route path="/" element={<Index />} />
+            <Route path="/chat" element={<ChatPage />} />
+
+            {/* Protected Routes for Admin Only */}
+            <Route element={<RequireAuth allowedRoles={['admin']} />}>
+              <Route path="/admin" element={<AdminPage />} />
+            </Route>
+
+            {/* Redirect old connection route to admin if admin, or home if user */}
+            <Route
+              path="/connection"
+              element={<Navigate to="/admin" replace />}
+            />
+          </Route>
         </Route>
+
         <Route path="*" element={<NotFound />} />
       </Routes>
     </TooltipProvider>

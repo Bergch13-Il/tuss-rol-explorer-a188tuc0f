@@ -43,3 +43,13 @@ export interface AIProvider {
 
 export type ViewMode = 'list' | 'compare'
 export type SearchFilter = 'all' | 'correlated' | 'uncorrelated'
+
+export type UserRole = 'admin' | 'user'
+
+export interface User {
+  id: string
+  username: string
+  password?: string
+  role: UserRole
+  createdAt: number
+}
