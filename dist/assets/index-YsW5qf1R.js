@@ -19077,6 +19077,33 @@ var Database = createLucideIcon("database", [
 		key: "mv7ke4"
 	}]
 ]);
+var EyeOff = createLucideIcon("eye-off", [
+	["path", {
+		d: "M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49",
+		key: "ct8e1f"
+	}],
+	["path", {
+		d: "M14.084 14.158a3 3 0 0 1-4.242-4.242",
+		key: "151rxh"
+	}],
+	["path", {
+		d: "M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143",
+		key: "13bj9a"
+	}],
+	["path", {
+		d: "m2 2 20 20",
+		key: "1ooewy"
+	}]
+]);
+var Eye = createLucideIcon("eye", [["path", {
+	d: "M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0",
+	key: "1nclc0"
+}], ["circle", {
+	cx: "12",
+	cy: "12",
+	r: "3",
+	key: "1v7zrd"
+}]]);
 var FileCheck = createLucideIcon("file-check", [
 	["path", {
 		d: "M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z",
@@ -31289,7 +31316,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				var cachedValue = getSnapshot();
 				objectIs(value, cachedValue) || (console.error("The result of getSnapshot should be cached to avoid an infinite loop"), didWarnUncachedGetSnapshot = !0);
 			}
-			cachedValue = useState$9({ inst: {
+			cachedValue = useState$10({ inst: {
 				value,
 				getSnapshot
 			} });
@@ -31326,7 +31353,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 			return getSnapshot();
 		}
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-		var React$5 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$9 = React$5.useState, useEffect$5 = React$5.useEffect, useLayoutEffect$1 = React$5.useLayoutEffect, useDebugValue$1 = React$5.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
+		var React$5 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$10 = React$5.useState, useEffect$5 = React$5.useEffect, useLayoutEffect$1 = React$5.useLayoutEffect, useDebugValue$1 = React$5.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
 		exports.useSyncExternalStore = void 0 !== React$5.useSyncExternalStore ? React$5.useSyncExternalStore : shim;
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
 	})();
@@ -32154,13 +32181,12 @@ const useAuthStore = create()(persist((set, get) => ({
 	name: "tuss-auth-storage",
 	partialize: (state) => ({ users: state.users })
 }));
-function AdminPage() {
+function UserManagement() {
 	const { users, registerUser, deleteUser } = useAuthStore();
-	const { apiKey, setApiKey, selectedProvider, setProvider, selectedModel, setModel } = useSettingsStore_default();
-	const [tempKey, setTempKey] = (0, import_react.useState)(apiKey);
 	const [newUsername, setNewUsername] = (0, import_react.useState)("");
 	const [newPassword, setNewPassword] = (0, import_react.useState)("");
 	const [isDialogOpen, setIsDialogOpen] = (0, import_react.useState)(false);
+	const [visiblePasswords, setVisiblePasswords] = (0, import_react.useState)(/* @__PURE__ */ new Set());
 	const handleCreateUser = () => {
 		if (!newUsername || !newPassword) {
 			toast.error("Preencha todos os campos");
@@ -32171,10 +32197,258 @@ function AdminPage() {
 		setNewPassword("");
 		setIsDialogOpen(false);
 	};
+	const togglePasswordVisibility = (userId) => {
+		const newSet = new Set(visiblePasswords);
+		if (newSet.has(userId)) newSet.delete(userId);
+		else newSet.add(userId);
+		setVisiblePasswords(newSet);
+	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
+		className: "flex flex-row items-center justify-between space-y-0 pb-4",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+			className: "space-y-1",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Gerenciamento de Usuários" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Visualize, adicione e remova usuários do sistema." })]
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
+			open: isDialogOpen,
+			onOpenChange: setIsDialogOpen,
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
+				asChild: true,
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+					className: "gap-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), "Cadastrar Usuário"]
+				})
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Novo Usuário" }) }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "grid gap-4 py-4",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "space-y-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label$1, {
+							htmlFor: "new-user",
+							children: "Nome de Usuário"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+							id: "new-user",
+							value: newUsername,
+							onChange: (e) => setNewUsername(e.target.value),
+							placeholder: "Ex: joaosilva"
+						})]
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "space-y-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label$1, {
+							htmlFor: "new-pass",
+							children: "Senha"
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+							id: "new-pass",
+							type: "password",
+							value: newPassword,
+							onChange: (e) => setNewPassword(e.target.value),
+							placeholder: "••••••••"
+						})]
+					})]
+				}),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogClose, {
+					asChild: true,
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+						variant: "outline",
+						children: "Cancelar"
+					})
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+					onClick: handleCreateUser,
+					children: "Cadastrar"
+				})] })
+			] })]
+		})]
+	}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Usuário" }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Senha" }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Função" }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Data de Criação" }),
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
+			className: "text-right",
+			children: "Ações"
+		})
+	] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [
+		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, {
+				className: "font-medium flex items-center gap-2",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+					className: "bg-primary/10 p-1.5 rounded-full",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Users, { className: "h-3 w-3 text-primary" })
+				}), "Berg (Admin)"]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+				className: "font-mono text-xs text-muted-foreground",
+				children: "••••••••"
+			}) }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, { children: "Admin" }) }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: "-" }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+				className: "text-right",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+					variant: "ghost",
+					size: "icon",
+					disabled: true,
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 opacity-50" })
+				})
+			})
+		] }),
+		users.map((user) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+				className: "font-medium",
+				children: user.username
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+				className: "flex items-center gap-2",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+					className: "font-mono text-xs w-24 truncate",
+					children: visiblePasswords.has(user.id) ? user.password : "••••••••"
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+					variant: "ghost",
+					size: "icon",
+					className: "h-6 w-6 text-muted-foreground hover:text-foreground",
+					onClick: () => togglePasswordVisibility(user.id),
+					title: visiblePasswords.has(user.id) ? "Ocultar senha" : "Mostrar senha",
+					children: visiblePasswords.has(user.id) ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(EyeOff, { className: "h-3 w-3" }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Eye, { className: "h-3 w-3" })
+				})]
+			}) }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
+				variant: "outline",
+				children: "User"
+			}) }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: new Date(user.createdAt).toLocaleDateString() }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+				className: "text-right",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
+					variant: "ghost",
+					size: "icon",
+					onClick: () => deleteUser(user.id),
+					className: "text-destructive hover:text-destructive hover:bg-destructive/10",
+					title: "Remover usuário",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
+				})
+			})
+		] }, user.id)),
+		users.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
+			colSpan: 5,
+			className: "h-24 text-center text-muted-foreground",
+			children: "Nenhum usuário adicional cadastrado."
+		}) })
+	] })] }) })] });
+}
+function ConnectionSettings() {
+	const { apiKey, setApiKey, selectedProvider, setProvider, selectedModel, setModel } = useSettingsStore_default();
+	const [tempKey, setTempKey] = (0, import_react.useState)(apiKey);
 	const handleSaveSettings = () => {
 		setApiKey(tempKey);
 		toast.success("Configurações Salvas", { description: "As configurações de IA foram atualizadas globalmente." });
 	};
+	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "space-y-6",
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
+				className: "flex items-center gap-2",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Server, { className: "h-5 w-5 text-primary" }), "Provedor de IA Global"]
+			}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Selecione o provedor de inteligência artificial que será utilizado por todos os usuários do sistema." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
+				className: "space-y-4",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "space-y-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label$1, { children: "Provedor" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+						value: selectedProvider,
+						onValueChange: (val) => setProvider(val),
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Selecione um provedor" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+								value: "openai",
+								children: "OpenAI"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+								value: "groq",
+								children: "Groq"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+								value: "openrouter",
+								children: "OpenRouter"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+								value: "gemini",
+								children: "Google Gemini"
+							})
+						] })]
+					})]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "space-y-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label$1, { children: "Modelo" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
+						value: selectedModel,
+						onValueChange: setModel,
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Selecione um modelo" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+								value: "gpt-4o-mini",
+								children: "GPT-4o Mini"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+								value: "gpt-4o",
+								children: "GPT-4o"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+								value: "llama-3.1-70b-versatile",
+								children: "Llama 3.1 70B (Groq)"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
+								value: "gemini-1.5-pro",
+								children: "Gemini 1.5 Pro"
+							})
+						] })]
+					})]
+				})]
+			})] }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [
+				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
+					className: "flex items-center gap-2",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Key, { className: "h-5 w-5 text-accent" }), "Autenticação da API"]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Insira a chave de API segura. Esta configuração será aplicada globalmente." })] }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "space-y-2",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label$1, {
+							htmlFor: "api-key",
+							children: "Chave da API (API Key)"
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "relative",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+								id: "api-key",
+								type: "password",
+								value: tempKey,
+								onChange: (e) => setTempKey(e.target.value),
+								placeholder: "sk-...",
+								className: "pr-10"
+							}), apiKey && apiKey === tempKey && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Check, { className: "absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-green-500" })]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+							className: "text-xs text-muted-foreground",
+							children: "A chave é armazenada com segurança localmente e usada para todas as requisições."
+						})
+					]
+				}) }),
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
+					onClick: handleSaveSettings,
+					className: "ml-auto",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Save, { className: "mr-2 h-4 w-4" }), "Salvar Configurações"]
+				}) })
+			] }),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
+				className: "bg-muted/30 border-dashed",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
+					className: "flex items-center gap-2 text-base",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Cpu, { className: "h-4 w-4" }), "Status do Sistema"]
+				}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "flex items-center gap-2 text-sm",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: `h-2.5 w-2.5 rounded-full ${apiKey ? "bg-green-500" : "bg-red-400"}` }), apiKey ? "Sistema pronto para processar requisições de IA." : "Aguardando configuração de API."]
+				}) })]
+			})
+		]
+	});
+}
+function AdminPage() {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 		className: "container py-8 max-w-5xl mx-auto space-y-8 animate-fade-in",
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -32205,223 +32479,12 @@ function AdminPage() {
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
 					value: "users",
 					className: "space-y-4 mt-6",
-					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
-						className: "flex flex-row items-center justify-between space-y-0 pb-4",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "space-y-1",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, { children: "Gerenciamento de Usuários" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Visualize, adicione e remova usuários do sistema." })]
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Dialog, {
-							open: isDialogOpen,
-							onOpenChange: setIsDialogOpen,
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTrigger, {
-								asChild: true,
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-									className: "gap-2",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Plus, { className: "h-4 w-4" }), "Cadastrar Usuário"]
-								})
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogContent, { children: [
-								/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogTitle, { children: "Novo Usuário" }) }),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-									className: "grid gap-4 py-4",
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "space-y-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label$1, {
-											htmlFor: "new-user",
-											children: "Nome de Usuário"
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-											id: "new-user",
-											value: newUsername,
-											onChange: (e) => setNewUsername(e.target.value),
-											placeholder: "Ex: joaosilva"
-										})]
-									}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "space-y-2",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label$1, {
-											htmlFor: "new-pass",
-											children: "Senha"
-										}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-											id: "new-pass",
-											type: "password",
-											value: newPassword,
-											onChange: (e) => setNewPassword(e.target.value),
-											placeholder: "••••••••"
-										})]
-									})]
-								}),
-								/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(DialogFooter, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(DialogClose, {
-									asChild: true,
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-										variant: "outline",
-										children: "Cancelar"
-									})
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-									onClick: handleCreateUser,
-									children: "Cadastrar"
-								})] })
-							] })]
-						})]
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Table, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Usuário" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Função" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, { children: "Data de Criação" }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableHead, {
-							className: "text-right",
-							children: "Ações"
-						})
-					] }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableBody, { children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableCell, {
-								className: "font-medium flex items-center gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-									className: "bg-primary/10 p-1.5 rounded-full",
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Users, { className: "h-3 w-3 text-primary" })
-								}), "Berg (Admin)"]
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, { children: "Admin" }) }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: "-" }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-								className: "text-right",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-									variant: "ghost",
-									size: "icon",
-									disabled: true,
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4 opacity-50" })
-								})
-							})
-						] }),
-						users.map((user) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TableRow, { children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-								className: "font-medium",
-								children: user.username
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Badge, {
-								variant: "outline",
-								children: "User"
-							}) }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, { children: new Date(user.createdAt).toLocaleDateString() }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-								className: "text-right",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
-									variant: "ghost",
-									size: "icon",
-									onClick: () => deleteUser(user.id),
-									className: "text-destructive hover:text-destructive hover:bg-destructive/10",
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Trash2, { className: "h-4 w-4" })
-								})
-							})
-						] }, user.id)),
-						users.length === 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableRow, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(TableCell, {
-							colSpan: 4,
-							className: "h-24 text-center text-muted-foreground",
-							children: "Nenhum usuário adicional cadastrado."
-						}) })
-					] })] }) })] })
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(UserManagement, {})
 				}),
-				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TabsContent, {
+				/* @__PURE__ */ (0, import_jsx_runtime.jsx)(TabsContent, {
 					value: "connection",
-					className: "space-y-6 mt-6",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
-							className: "flex items-center gap-2",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Server, { className: "h-5 w-5 text-primary" }), "Provedor de IA Global"]
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Selecione o provedor de inteligência artificial que será utilizado por todos os usuários do sistema." })] }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
-							className: "space-y-4",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "space-y-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label$1, { children: "Provedor" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-									value: selectedProvider,
-									onValueChange: (val) => setProvider(val),
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Selecione um provedor" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-											value: "openai",
-											children: "OpenAI"
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-											value: "groq",
-											children: "Groq"
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-											value: "openrouter",
-											children: "OpenRouter"
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-											value: "gemini",
-											children: "Google Gemini"
-										})
-									] })]
-								})]
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "space-y-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label$1, { children: "Modelo" }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Select, {
-									value: selectedModel,
-									onValueChange: setModel,
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectTrigger, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectValue, { placeholder: "Selecione um modelo" }) }), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(SelectContent, { children: [
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-											value: "gpt-4o-mini",
-											children: "GPT-4o Mini"
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-											value: "gpt-4o",
-											children: "GPT-4o"
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-											value: "llama-3.1-70b-versatile",
-											children: "Llama 3.1 70B (Groq)"
-										}),
-										/* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectItem, {
-											value: "gemini-1.5-pro",
-											children: "Gemini 1.5 Pro"
-										})
-									] })]
-								})]
-							})]
-						})] }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, { children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
-								className: "flex items-center gap-2",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Key, { className: "h-5 w-5 text-accent" }), "Autenticação da API"]
-							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Insira a chave de API segura. Esta configuração será aplicada globalmente." })] }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "space-y-2",
-								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label$1, {
-										htmlFor: "api-key",
-										children: "Chave da API (API Key)"
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-										className: "relative",
-										children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-											id: "api-key",
-											type: "password",
-											value: tempKey,
-											onChange: (e) => setTempKey(e.target.value),
-											placeholder: "sk-...",
-											className: "pr-10"
-										}), apiKey && apiKey === tempKey && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Check, { className: "absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-green-500" })]
-									}),
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-										className: "text-xs text-muted-foreground",
-										children: "A chave é armazenada com segurança localmente e usada para todas as requisições."
-									})
-								]
-							}) }),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Button, {
-								onClick: handleSaveSettings,
-								className: "ml-auto",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Save, { className: "mr-2 h-4 w-4" }), "Salvar Configurações"]
-							}) })
-						] }),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-							className: "bg-muted/30 border-dashed",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardHeader, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardTitle, {
-								className: "flex items-center gap-2 text-base",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Cpu, { className: "h-4 w-4" }), "Status do Sistema"]
-							}) }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardContent, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "flex items-center gap-2 text-sm",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: `h-2.5 w-2.5 rounded-full ${apiKey ? "bg-green-500" : "bg-red-400"}` }), apiKey ? "Sistema pronto para processar requisições de IA." : "Aguardando configuração de API."]
-							}) })]
-						})
-					]
+					className: "mt-6",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ConnectionSettings, {})
 				})
 			]
 		})]
@@ -33787,4 +33850,4 @@ var App = () => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(BrowserRouter, {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-9g0l3QZM.js.map
+//# sourceMappingURL=index-YsW5qf1R.js.map

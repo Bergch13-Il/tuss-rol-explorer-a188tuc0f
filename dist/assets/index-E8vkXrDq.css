@@ -1545,6 +1545,9 @@ body{
 .w-2\.5{
   width: 0.625rem;
 }
+.w-24{
+  width: 6rem;
+}
 .w-3{
   width: 0.75rem;
 }
