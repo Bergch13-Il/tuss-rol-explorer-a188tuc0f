@@ -1,12 +1,22 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
-import { TussItem, CbhpmItem, SearchResult, ChatMessage } from '@/lib/types'
+import {
+  TussItem,
+  CbhpmItem,
+  SearchResult,
+  ChatMessage,
+  ViewMode,
+  SearchFilter,
+} from '@/lib/types'
 import { MOCK_TUSS_DATA, MOCK_CBHPM_DATA } from '@/lib/mockData'
+import { toast } from 'sonner'
 
 interface DataContextType {
   tussData: TussItem[]
   cbhpmData: CbhpmItem[]
   isDataLoaded: boolean
-  loadData: () => void
+  isChatProcessed: boolean
+  loadData: (type: 'tuss' | 'cbhpm' | 'both', file?: File) => void
+  processForChat: () => void
   clearData: () => void
   searchQuery: string
   setSearchQuery: (query: string) => void
@@ -19,6 +29,12 @@ interface DataContextType {
   tabs: string[]
   addTab: (tabName: string) => void
   removeTab: (tabName: string) => void
+  viewMode: ViewMode
+  setViewMode: (mode: ViewMode) => void
+  searchFilter: SearchFilter
+  setSearchFilter: (filter: SearchFilter) => void
+  isTabMode: boolean
+  setIsTabMode: (isTabMode: boolean) => void
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined)
@@ -27,39 +43,65 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
   const [tussData, setTussData] = useState<TussItem[]>([])
   const [cbhpmData, setCbhpmData] = useState<CbhpmItem[]>([])
   const [isDataLoaded, setIsDataLoaded] = useState(false)
+  const [isChatProcessed, setIsChatProcessed] = useState(false)
+
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState<SearchResult[]>([])
+
   const [activeTab, setActiveTab] = useState('Geral')
   const [tabs, setTabs] = useState<string[]>(['Geral'])
+
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([])
+
+  const [viewMode, setViewMode] = useState<ViewMode>('list')
+  const [searchFilter, setSearchFilter] = useState<SearchFilter>('all')
+  const [isTabMode, setIsTabMode] = useState(false)
 
   useEffect(() => {
     const savedLoaded = localStorage.getItem('tuss_data_loaded')
     if (savedLoaded === 'true') {
-      // Restore simulated data
       setTussData(MOCK_TUSS_DATA)
       setCbhpmData(MOCK_CBHPM_DATA)
       setIsDataLoaded(true)
     }
   }, [])
 
-  const loadData = () => {
-    setTussData(MOCK_TUSS_DATA)
-    setCbhpmData(MOCK_CBHPM_DATA)
+  const loadData = (type: 'tuss' | 'cbhpm' | 'both', file?: File) => {
+    // Simulate parsing logic
+    if (type === 'tuss' || type === 'both') {
+      setTussData(MOCK_TUSS_DATA)
+    }
+    if (type === 'cbhpm' || type === 'both') {
+      setCbhpmData(MOCK_CBHPM_DATA)
+    }
+
     setIsDataLoaded(true)
     localStorage.setItem('tuss_data_loaded', 'true')
+
+    // If a file name is provided, we can simulate specific behavior,
+    // but for now we just load mock data
+    console.log(`Loaded ${type} data${file ? ` from ${file.name}` : ''}`)
+  }
+
+  const processForChat = () => {
+    setIsChatProcessed(true)
+    toast.success('Data processed for AI context', {
+      description: `${tussData.length} TUSS codes and ${cbhpmData.length} CBHPM codes ready.`,
+    })
   }
 
   const clearData = () => {
     setTussData([])
     setCbhpmData([])
     setIsDataLoaded(false)
+    setIsChatProcessed(false)
     setSearchResults([])
     setSearchQuery('')
     localStorage.removeItem('tuss_data_loaded')
   }
 
   const addTab = (tabName: string) => {
+    if (!isTabMode) return
     if (!tabs.includes(tabName)) {
       setTabs([...tabs, tabName])
     }
@@ -82,7 +124,7 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
     setChatHistory([])
   }
 
-  // Basic search logic
+  // Search Logic
   useEffect(() => {
     if (!searchQuery || !isDataLoaded) {
       setSearchResults([])
@@ -90,7 +132,7 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     const query = searchQuery.toLowerCase()
-    const results: SearchResult[] = []
+    let results: SearchResult[] = []
 
     // Search TUSS
     tussData.forEach((item) => {
@@ -98,7 +140,6 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
         item.code.includes(query) ||
         item.term.toLowerCase().includes(query)
       ) {
-        // Find correlation mock logic (simple matching by similar code)
         const cleanTussCode = item.code.replace(/\D/g, '').substring(0, 6)
         const correlations = cbhpmData.filter((cb) =>
           cb.code.replace(/\D/g, '').startsWith(cleanTussCode),
@@ -113,15 +154,12 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
       }
     })
 
-    // Search CBHPM if no TUSS found or mix
+    // Search CBHPM if needed or mixed
     cbhpmData.forEach((item) => {
       if (
         item.code.includes(query) ||
         item.term.toLowerCase().includes(query)
       ) {
-        // Avoid duplicates if already found via TUSS correlation?
-        // For simplicity, we just list matches.
-        // Reverse correlation
         const cleanCbhpmCode = item.code.replace(/\D/g, '').substring(0, 6)
         const correlations = tussData.filter((tuss) =>
           tuss.code.replace(/\D/g, '').startsWith(cleanCbhpmCode),
@@ -136,8 +174,15 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
       }
     })
 
+    // Apply Filter
+    if (searchFilter === 'correlated') {
+      results = results.filter((r) => r.correlations.length > 0)
+    } else if (searchFilter === 'uncorrelated') {
+      results = results.filter((r) => r.correlations.length === 0)
+    }
+
     setSearchResults(results)
-  }, [searchQuery, isDataLoaded, tussData, cbhpmData])
+  }, [searchQuery, isDataLoaded, tussData, cbhpmData, searchFilter])
 
   return (
     <DataContext.Provider
@@ -145,7 +190,9 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
         tussData,
         cbhpmData,
         isDataLoaded,
+        isChatProcessed,
         loadData,
+        processForChat,
         clearData,
         searchQuery,
         setSearchQuery,
@@ -158,6 +205,12 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
         tabs,
         addTab,
         removeTab,
+        viewMode,
+        setViewMode,
+        searchFilter,
+        setSearchFilter,
+        isTabMode,
+        setIsTabMode,
       }}
     >
       {children}

@@ -8,15 +8,15 @@
 
 @layer base {
   :root {
-    /* Petroleum Blue - Primary */
+    /* Petrol Blue - Primary (209 50% 23%) */
     --primary: 209 50% 23%;
     --primary-foreground: 0 0% 100%;
 
-    /* Amber/Gold - Accent */
+    /* Amber - Accent (38 35% 56%) */
     --accent: 38 35% 56%;
     --accent-foreground: 0 0% 100%;
 
-    /* Light Gray - Background */
+    /* Light Grey/Bege - Background (0 0% 96%) */
     --background: 0 0% 96%;
     --foreground: 222.2 84% 4.9%;
 
@@ -101,6 +101,46 @@
   body {
     @apply bg-background text-foreground;
     font-family: 'Inter', sans-serif;
+  }
+}
+
+/* Custom classes for transitions and animations */
+@layer utilities {
+  .animate-fade-in {
+    animation: fade-in 0.5s ease-in-out;
+  }
+  .animate-accordion-down {
+    animation: accordion-down 0.2s ease-out;
+  }
+  .animate-accordion-up {
+    animation: accordion-up 0.2s ease-out;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes accordion-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
   }
 }
 

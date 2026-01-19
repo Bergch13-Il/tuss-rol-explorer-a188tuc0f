@@ -40,3 +40,6 @@ export interface AIProvider {
   name: string
   model: string
 }
+
+export type ViewMode = 'list' | 'compare'
+export type SearchFilter = 'all' | 'correlated' | 'uncorrelated'

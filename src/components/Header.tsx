@@ -1,11 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
-import {
-  Trash2,
-  Settings,
-  MessageSquare,
-  LayoutDashboard,
-  Database,
-} from 'lucide-react'
+import { Trash2, Settings, MessageSquare, Database } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import useDataStore from '@/stores/useDataStore'
 import {
@@ -20,79 +14,62 @@ export function Header() {
   const location = useLocation()
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center justify-between px-4">
-        <div className="flex items-center gap-6">
-          <Link to="/" className="flex items-center gap-2 font-bold text-xl">
-            <div className="bg-primary text-primary-foreground p-1.5 rounded-md">
-              <Database className="h-5 w-5" />
+    <header className="sticky top-0 z-50 w-full border-b bg-primary text-primary-foreground shadow-md">
+      <div className="container flex h-16 items-center justify-between px-4">
+        <div className="flex items-center gap-4">
+          <Link to="/" className="flex items-center gap-3">
+            <div className="bg-white/10 p-2 rounded-lg backdrop-blur-sm">
+              <Database className="h-6 w-6 text-white" />
             </div>
-            <span className="text-primary hidden md:inline-block">
-              TUSS ROL Explorer
-            </span>
+            <div className="flex flex-col">
+              <span className="font-bold text-lg leading-tight text-white">
+                Consulta TUSS - Rol ANS - Carlos e Berg
+              </span>
+              <span className="text-[10px] md:text-xs text-primary-foreground/70 font-light">
+                Sistema de correlação entre Terminologia TUSS e Rol de
+                Procedimentos ANS
+              </span>
+            </div>
           </Link>
-
-          <nav className="flex items-center gap-4 text-sm font-medium">
-            <Link
-              to="/"
-              className={cn(
-                'transition-colors hover:text-foreground/80',
-                location.pathname === '/'
-                  ? 'text-foreground'
-                  : 'text-foreground/60',
-              )}
-            >
-              <span className="flex items-center gap-2">
-                <LayoutDashboard className="h-4 w-4" />
-                Dashboard
-              </span>
-            </Link>
-            <Link
-              to="/chat"
-              className={cn(
-                'transition-colors hover:text-foreground/80',
-                location.pathname === '/chat'
-                  ? 'text-foreground'
-                  : 'text-foreground/60',
-              )}
-            >
-              <span className="flex items-center gap-2">
-                <MessageSquare className="h-4 w-4" />
-                AI Chat
-              </span>
-            </Link>
-          </nav>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           {isDataLoaded && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={clearData}
-                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                >
-                  <Trash2 className="h-5 w-5" />
-                  <span className="sr-only">Clear Data</span>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Limpar Dados</TooltipContent>
-            </Tooltip>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={clearData}
+              className="hidden md:flex bg-red-500 hover:bg-red-600 border-none shadow-sm"
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Limpar Dados
+            </Button>
           )}
 
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Link to="/connection">
-                <Button variant="ghost" size="icon">
-                  <Settings className="h-5 w-5" />
-                  <span className="sr-only">Settings</span>
-                </Button>
-              </Link>
-            </TooltipTrigger>
-            <TooltipContent>Conexão & Configuração</TooltipContent>
-          </Tooltip>
+          <Link to="/chat">
+            <Button
+              variant="secondary"
+              size="sm"
+              className={cn(
+                'bg-[#cda45e] hover:bg-[#b89354] text-white border-none shadow-sm',
+                location.pathname === '/chat' && 'ring-2 ring-white/30',
+              )}
+            >
+              <MessageSquare className="h-4 w-4 mr-2" />
+              Chat IA
+            </Button>
+          </Link>
+
+          <Link to="/connection">
+            <Button
+              variant="outline"
+              size="sm"
+              className="bg-white/10 hover:bg-white/20 text-white border-white/20 hover:text-white"
+            >
+              <Settings className="h-4 w-4 mr-2" />
+              Conexão
+            </Button>
+          </Link>
         </div>
       </div>
     </header>

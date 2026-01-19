@@ -1,32 +1,128 @@
 import { useState, useCallback } from 'react'
-import { Upload, FileSpreadsheet, Loader2, FileType } from 'lucide-react'
+import { Upload, FileSpreadsheet, Loader2, CheckCircle2 } from 'lucide-react'
 import { useDropzone } from 'react-dropzone'
 import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from '@/components/ui/card'
 import useDataStore from '@/stores/useDataStore'
-import { toast } from '@/hooks/use-toast'
+import { toast } from 'sonner'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from '@/components/ui/dialog'
+import { Label } from '@/components/ui/label'
 
-export function FileUploader() {
+interface DualFileUploaderProps {
+  isOpen: boolean
+  onClose: () => void
+}
+
+export function DualFileUploader({ isOpen, onClose }: DualFileUploaderProps) {
   const { loadData } = useDataStore()
   const [isUploading, setIsUploading] = useState(false)
+  const [tussFile, setTussFile] = useState<File | null>(null)
+  const [cbhpmFile, setCbhpmFile] = useState<File | null>(null)
 
+  const handleUpload = () => {
+    if (!tussFile && !cbhpmFile) {
+      toast.error('Selecione pelo menos um arquivo para importar.')
+      return
+    }
+
+    setIsUploading(true)
+
+    // Simulate processing
+    setTimeout(() => {
+      loadData('both', tussFile || undefined)
+      setIsUploading(false)
+      toast.success('Arquivos processados com sucesso!', {
+        description:
+          'As tabelas TUSS e CBHPM foram carregadas e correlacionadas.',
+      })
+      onClose()
+    }, 1500)
+  }
+
+  return (
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Importar Tabelas</DialogTitle>
+          <DialogDescription>
+            Carregue os arquivos das tabelas TUSS/ROL e CBHPM para análise.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="grid gap-4 py-4">
+          <FileDropZone
+            label="Tabela TUSS / Rol ANS"
+            file={tussFile}
+            setFile={setTussFile}
+            accept=".csv, .xlsx, .xls"
+          />
+          <FileDropZone
+            label="Tabela CBHPM"
+            file={cbhpmFile}
+            setFile={setCbhpmFile}
+            accept=".csv, .xlsx, .xls"
+          />
+        </div>
+
+        <DialogFooter className="sm:justify-between">
+          <DialogClose asChild>
+            <Button type="button" variant="secondary">
+              Cancelar
+            </Button>
+          </DialogClose>
+          <Button
+            type="submit"
+            onClick={handleUpload}
+            disabled={isUploading || (!tussFile && !cbhpmFile)}
+          >
+            {isUploading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Processando...
+              </>
+            ) : (
+              'Importar Arquivos'
+            )}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+function FileDropZone({
+  label,
+  file,
+  setFile,
+  accept,
+}: {
+  label: string
+  file: File | null
+  setFile: (f: File | null) => void
+  accept: string
+}) {
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       if (acceptedFiles.length > 0) {
-        setIsUploading(true)
-        // Simulate processing time
-        setTimeout(() => {
-          loadData()
-          setIsUploading(false)
-          toast({
-            title: 'Files Processed Successfully',
-            description:
-              'TUSS and CBHPM data tables have been ingested and correlated.',
-          })
-        }, 2000)
+        setFile(acceptedFiles[0])
       }
     },
-    [loadData],
+    [setFile],
   )
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -38,47 +134,48 @@ export function FileUploader() {
       ],
       'application/vnd.ms-excel': ['.xls'],
     },
+    maxFiles: 1,
   })
 
   return (
-    <div className="w-full max-w-2xl mx-auto p-4">
-      <Card
+    <div className="space-y-2">
+      <Label>{label}</Label>
+      <div
         {...getRootProps()}
-        className={`border-2 border-dashed p-10 flex flex-col items-center justify-center text-center cursor-pointer transition-colors duration-200 ${
+        className={`border-2 border-dashed rounded-md p-4 text-center cursor-pointer transition-colors ${
           isDragActive
             ? 'border-primary bg-primary/5'
-            : 'border-muted-foreground/25 hover:border-primary/50'
-        }`}
+            : 'border-muted-foreground/20 hover:border-primary/50'
+        } ${file ? 'bg-green-50 border-green-200' : ''}`}
       >
         <input {...getInputProps()} />
-        <div className="bg-muted p-4 rounded-full mb-4">
-          {isUploading ? (
-            <Loader2 className="h-8 w-8 text-primary animate-spin" />
-          ) : (
-            <Upload className="h-8 w-8 text-primary" />
-          )}
-        </div>
-        <h3 className="text-xl font-semibold mb-2">
-          {isUploading ? 'Processing Data...' : 'Upload TUSS & CBHPM Tables'}
-        </h3>
-        <p className="text-muted-foreground max-w-sm mb-6">
-          Drag and drop your .xlsx, .xls or .csv files here, or click to select
-          files. We'll automatically parse and correlate them.
-        </p>
-        <div className="flex gap-4 text-xs text-muted-foreground">
-          <div className="flex items-center gap-1">
-            <FileSpreadsheet className="h-4 w-4" /> Excel
+
+        {file ? (
+          <div className="flex items-center justify-center gap-2 text-green-700">
+            <CheckCircle2 className="h-5 w-5" />
+            <span className="text-sm font-medium truncate max-w-[200px]">
+              {file.name}
+            </span>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-6 w-6 p-0 text-green-700 ml-2"
+              onClick={(e) => {
+                e.stopPropagation()
+                setFile(null)
+              }}
+            >
+              x
+            </Button>
           </div>
-          <div className="flex items-center gap-1">
-            <FileType className="h-4 w-4" /> CSV
+        ) : (
+          <div className="flex flex-col items-center gap-1 text-muted-foreground">
+            <Upload className="h-5 w-5 mb-1" />
+            <span className="text-xs">Arraste ou clique para selecionar</span>
+            <span className="text-[10px] opacity-70">(.xlsx, .xls, .csv)</span>
           </div>
-        </div>
-        {!isUploading && (
-          <Button variant="outline" className="mt-6">
-            Select Files
-          </Button>
         )}
-      </Card>
+      </div>
     </div>
   )
 }
