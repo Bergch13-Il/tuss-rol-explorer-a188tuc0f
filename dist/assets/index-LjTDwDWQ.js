@@ -32513,7 +32513,7 @@ function LoginPage() {
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardTitle, {
 						className: "text-2xl font-bold text-primary",
-						children: "Acesso Restrito"
+						children: "Acesso de Usuário"
 					}),
 					/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardDescription, { children: "Entre com suas credenciais para acessar o sistema" })
 				]
@@ -33850,4 +33850,4 @@ var App = () => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(BrowserRouter, {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-YsW5qf1R.js.map
+//# sourceMappingURL=index-LjTDwDWQ.js.map

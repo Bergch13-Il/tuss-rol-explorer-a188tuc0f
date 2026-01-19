@@ -40,7 +40,7 @@ export default function LoginPage() {
             <Lock className="h-6 w-6 text-primary" />
           </div>
           <CardTitle className="text-2xl font-bold text-primary">
-            Acesso Restrito
+            Acesso de Usuário
           </CardTitle>
           <CardDescription>
             Entre com suas credenciais para acessar o sistema
