@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { AIProvider } from '@/lib/types'
+import { settingsService } from '@/services/settingsService'
+import { toast } from 'sonner'
 
 interface SettingsContextType {
   apiKey: string
@@ -8,6 +10,8 @@ interface SettingsContextType {
   setProvider: (provider: AIProvider['id']) => void
   selectedModel: string
   setModel: (model: string) => void
+  isLoading: boolean
+  saveSettings: () => Promise<void>
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(
@@ -19,29 +23,45 @@ export const SettingsProvider = ({
 }: {
   children: React.ReactNode
 }) => {
-  const [apiKey, setApiKey] = useState(
-    () => localStorage.getItem('tuss_ai_key') || '',
-  )
-  const [selectedProvider, setProvider] = useState<AIProvider['id']>(
-    () =>
-      (localStorage.getItem('tuss_ai_provider') as AIProvider['id']) ||
-      'openai',
-  )
-  const [selectedModel, setModel] = useState(
-    () => localStorage.getItem('tuss_ai_model') || 'gpt-4o-mini',
-  )
+  const [apiKey, setApiKey] = useState('')
+  const [selectedProvider, setProvider] = useState<AIProvider['id']>('openai')
+  const [selectedModel, setModel] = useState('gpt-4o-mini')
+  const [isLoading, setIsLoading] = useState(true)
 
+  // Load settings on mount
   useEffect(() => {
-    localStorage.setItem('tuss_ai_key', apiKey)
-  }, [apiKey])
+    const loadSettings = async () => {
+      try {
+        const config = await settingsService.getAIConfig()
+        if (config) {
+          setApiKey(config.apiKey || '')
+          setProvider(config.provider || 'openai')
+          setModel(config.model || 'gpt-4o-mini')
+        }
+      } catch (error) {
+        console.error('Failed to load settings:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    loadSettings()
+  }, [])
 
-  useEffect(() => {
-    localStorage.setItem('tuss_ai_provider', selectedProvider)
-  }, [selectedProvider])
-
-  useEffect(() => {
-    localStorage.setItem('tuss_ai_model', selectedModel)
-  }, [selectedModel])
+  const saveSettings = async () => {
+    try {
+      await settingsService.saveAIConfig({
+        apiKey,
+        provider: selectedProvider,
+        model: selectedModel,
+      })
+      toast.success('Configurações Salvas', {
+        description: 'As configurações de IA foram atualizadas globalmente.',
+      })
+    } catch (error) {
+      console.error('Failed to save settings:', error)
+      toast.error('Erro ao salvar configurações.')
+    }
+  }
 
   return (
     <SettingsContext.Provider
@@ -52,6 +72,8 @@ export const SettingsProvider = ({
         setProvider,
         selectedModel,
         setModel,
+        isLoading,
+        saveSettings,
       }}
     >
       {children}

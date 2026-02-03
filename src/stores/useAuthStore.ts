@@ -1,26 +1,19 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { persist, createJSONStorage } from 'zustand/middleware'
 import { User } from '@/lib/types'
 import { toast } from 'sonner'
+import { userService } from '@/services/userService'
 
 interface AuthState {
   isAuthenticated: boolean
   currentUser: User | null
   users: User[]
-  login: (username: string, pass: string) => boolean
+  login: (username: string, pass: string) => Promise<boolean>
   logout: () => void
-  registerUser: (username: string, pass: string) => void
-  deleteUser: (id: string) => void
+  registerUser: (username: string, pass: string) => Promise<void>
+  deleteUser: (id: string) => Promise<void>
+  loadUsers: () => Promise<void>
 }
-
-const ADMIN_USER: User = {
-  id: 'admin-001',
-  username: 'Berg',
-  role: 'admin',
-  createdAt: Date.now(),
-}
-
-const ADMIN_PASS = 'c1c3r@1302'
 
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -29,26 +22,16 @@ export const useAuthStore = create<AuthState>()(
       currentUser: null,
       users: [],
 
-      login: (username, pass) => {
-        // Check Admin
-        if (username === ADMIN_USER.username && pass === ADMIN_PASS) {
-          set({ isAuthenticated: true, currentUser: ADMIN_USER })
-          toast.success('Login de Administrador realizado com sucesso!')
-          return true
-        }
-
-        // Check Regular Users
-        const foundUser = get().users.find(
-          (u) => u.username === username && u.password === pass,
-        )
-
-        if (foundUser) {
-          // Remove password from state for safety (mock)
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const { password, ...safeUser } = foundUser
-          set({ isAuthenticated: true, currentUser: safeUser as User })
-          toast.success(`Bem-vindo, ${username}!`)
-          return true
+      login: async (username, pass) => {
+        try {
+          const user = await userService.verifyCredentials(username, pass)
+          if (user) {
+            set({ isAuthenticated: true, currentUser: user })
+            toast.success(`Bem-vindo, ${username}!`)
+            return true
+          }
+        } catch (error) {
+          console.error('Login error:', error)
         }
 
         toast.error('Credenciais inválidas.')
@@ -56,41 +39,56 @@ export const useAuthStore = create<AuthState>()(
       },
 
       logout: () => {
-        set({ isAuthenticated: false, currentUser: null })
+        set({ isAuthenticated: false, currentUser: null, users: [] })
         toast.info('Sessão encerrada.')
       },
 
-      registerUser: (username, pass) => {
-        const users = get().users
-        if (
-          users.some((u) => u.username === username) ||
-          username === ADMIN_USER.username
-        ) {
-          toast.error('Nome de usuário já existe.')
-          return
+      registerUser: async (username, pass) => {
+        try {
+          // Check locally first to avoid unnecessary calls if loaded, but DB check is safer
+          // We'll rely on DB unique constraint error or check manually
+          const newUser = await userService.createUser(username, pass)
+          if (newUser) {
+            set((state) => ({ users: [...state.users, newUser] }))
+            toast.success(`Usuário ${username} cadastrado com sucesso.`)
+          }
+        } catch (error: any) {
+          if (error.code === '23505') {
+            toast.error('Nome de usuário já existe.')
+          } else {
+            toast.error('Erro ao cadastrar usuário.')
+            console.error(error)
+          }
         }
-
-        const newUser: User = {
-          id: crypto.randomUUID(),
-          username,
-          password: pass,
-          role: 'user',
-          createdAt: Date.now(),
-        }
-
-        set({ users: [...users, newUser] })
-        toast.success(`Usuário ${username} cadastrado com sucesso.`)
       },
 
-      deleteUser: (id) => {
-        const users = get().users.filter((u) => u.id !== id)
-        set({ users })
-        toast.success('Usuário removido.')
+      deleteUser: async (id) => {
+        try {
+          await userService.deleteUser(id)
+          set((state) => ({ users: state.users.filter((u) => u.id !== id) }))
+          toast.success('Usuário removido.')
+        } catch (error) {
+          toast.error('Erro ao remover usuário.')
+          console.error(error)
+        }
+      },
+
+      loadUsers: async () => {
+        try {
+          const users = await userService.getUsers()
+          set({ users })
+        } catch (error) {
+          console.error('Failed to load users', error)
+        }
       },
     }),
     {
       name: 'tuss-auth-storage',
-      partialize: (state) => ({ users: state.users }), // Persist only users list, session is transient (or you can persist auth too if desired)
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({
+        isAuthenticated: state.isAuthenticated,
+        currentUser: state.currentUser,
+      }), // Only persist session
     },
   ),
 )

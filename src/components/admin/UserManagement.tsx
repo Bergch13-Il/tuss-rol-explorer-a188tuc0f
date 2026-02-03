@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Users, Trash2, Plus, Eye, EyeOff } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Users, Trash2, Plus, Eye, EyeOff, Loader2 } from 'lucide-react'
 import {
   Card,
   CardContent,
@@ -32,27 +32,46 @@ import { useAuthStore } from '@/stores/useAuthStore'
 import { toast } from 'sonner'
 
 export function UserManagement() {
-  const { users, registerUser, deleteUser } = useAuthStore()
+  const { users, registerUser, deleteUser, loadUsers } = useAuthStore()
 
   // New User State
   const [newUsername, setNewUsername] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   // Password Visibility State
   const [visiblePasswords, setVisiblePasswords] = useState<Set<string>>(
     new Set(),
   )
 
-  const handleCreateUser = () => {
+  useEffect(() => {
+    const fetch = async () => {
+      setIsLoading(true)
+      await loadUsers()
+      setIsLoading(false)
+    }
+    fetch()
+  }, [loadUsers])
+
+  const handleCreateUser = async () => {
     if (!newUsername || !newPassword) {
       toast.error('Preencha todos os campos')
       return
     }
-    registerUser(newUsername, newPassword)
+    setIsSubmitting(true)
+    await registerUser(newUsername, newPassword)
+    setIsSubmitting(false)
     setNewUsername('')
     setNewPassword('')
     setIsDialogOpen(false)
+  }
+
+  const handleDeleteUser = async (id: string) => {
+    if (confirm('Tem certeza que deseja remover este usuário?')) {
+      await deleteUser(id)
+    }
   }
 
   const togglePasswordVisibility = (userId: string) => {
@@ -71,7 +90,7 @@ export function UserManagement() {
         <div className="space-y-1">
           <CardTitle>Gerenciamento de Usuários</CardTitle>
           <CardDescription>
-            Visualize, adicione e remova usuários do sistema.
+            Visualize, adicione e remova usuários do sistema (Supabase DB).
           </CardDescription>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -110,109 +129,108 @@ export function UserManagement() {
               <DialogClose asChild>
                 <Button variant="outline">Cancelar</Button>
               </DialogClose>
-              <Button onClick={handleCreateUser}>Cadastrar</Button>
+              <Button onClick={handleCreateUser} disabled={isSubmitting}>
+                {isSubmitting && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                Cadastrar
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
       </CardHeader>
       <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Usuário</TableHead>
-              <TableHead>Senha</TableHead>
-              <TableHead>Função</TableHead>
-              <TableHead>Data de Criação</TableHead>
-              <TableHead className="text-right">Ações</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {/* Admin Row (Fixed) */}
-            <TableRow>
-              <TableCell className="font-medium flex items-center gap-2">
-                <div className="bg-primary/10 p-1.5 rounded-full">
-                  <Users className="h-3 w-3 text-primary" />
-                </div>
-                Berg (Admin)
-              </TableCell>
-              <TableCell>
-                <span className="font-mono text-xs text-muted-foreground">
-                  ••••••••
-                </span>
-              </TableCell>
-              <TableCell>
-                <Badge>Admin</Badge>
-              </TableCell>
-              <TableCell>-</TableCell>
-              <TableCell className="text-right">
-                <Button variant="ghost" size="icon" disabled>
-                  <Trash2 className="h-4 w-4 opacity-50" />
-                </Button>
-              </TableCell>
-            </TableRow>
-
-            {/* Registered Users Rows */}
-            {users.map((user) => (
-              <TableRow key={user.id}>
-                <TableCell className="font-medium">{user.username}</TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs w-24 truncate">
-                      {visiblePasswords.has(user.id)
-                        ? user.password
-                        : '••••••••'}
-                    </span>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-6 w-6 text-muted-foreground hover:text-foreground"
-                      onClick={() => togglePasswordVisibility(user.id)}
-                      title={
-                        visiblePasswords.has(user.id)
-                          ? 'Ocultar senha'
-                          : 'Mostrar senha'
-                      }
-                    >
-                      {visiblePasswords.has(user.id) ? (
-                        <EyeOff className="h-3 w-3" />
-                      ) : (
-                        <Eye className="h-3 w-3" />
-                      )}
-                    </Button>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <Badge variant="outline">User</Badge>
-                </TableCell>
-                <TableCell>
-                  {new Date(user.createdAt).toLocaleDateString()}
-                </TableCell>
-                <TableCell className="text-right">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => deleteUser(user.id)}
-                    className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                    title="Remover usuário"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-
-            {users.length === 0 && (
+        {isLoading ? (
+          <div className="flex justify-center items-center py-8">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
               <TableRow>
-                <TableCell
-                  colSpan={5}
-                  className="h-24 text-center text-muted-foreground"
-                >
-                  Nenhum usuário adicional cadastrado.
-                </TableCell>
+                <TableHead>Usuário</TableHead>
+                <TableHead>Senha</TableHead>
+                <TableHead>Função</TableHead>
+                <TableHead>Data de Criação</TableHead>
+                <TableHead className="text-right">Ações</TableHead>
               </TableRow>
-            )}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {users.map((user) => (
+                <TableRow key={user.id}>
+                  <TableCell className="font-medium flex items-center gap-2">
+                    {user.role === 'admin' && (
+                      <div className="bg-primary/10 p-1.5 rounded-full">
+                        <Users className="h-3 w-3 text-primary" />
+                      </div>
+                    )}
+                    {user.username} {user.role === 'admin' ? '(Admin)' : ''}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-xs w-24 truncate">
+                        {visiblePasswords.has(user.id)
+                          ? user.password
+                          : '••••••••'}
+                      </span>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6 text-muted-foreground hover:text-foreground"
+                        onClick={() => togglePasswordVisibility(user.id)}
+                        title={
+                          visiblePasswords.has(user.id)
+                            ? 'Ocultar senha'
+                            : 'Mostrar senha'
+                        }
+                      >
+                        {visiblePasswords.has(user.id) ? (
+                          <EyeOff className="h-3 w-3" />
+                        ) : (
+                          <Eye className="h-3 w-3" />
+                        )}
+                      </Button>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={user.role === 'admin' ? 'default' : 'outline'}
+                    >
+                      {user.role === 'admin' ? 'Admin' : 'User'}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    {new Date(user.createdAt).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {user.role !== 'admin' && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDeleteUser(user.id)}
+                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                        title="Remover usuário"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+
+              {users.length === 0 && (
+                <TableRow>
+                  <TableCell
+                    colSpan={5}
+                    className="h-24 text-center text-muted-foreground"
+                  >
+                    Nenhum usuário encontrado.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        )}
       </CardContent>
     </Card>
   )

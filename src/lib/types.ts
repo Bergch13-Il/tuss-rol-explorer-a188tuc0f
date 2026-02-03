@@ -53,3 +53,17 @@ export interface User {
   role: UserRole
   createdAt: number
 }
+
+export interface AppUserDB {
+  id: string
+  login: string
+  password: string
+  is_admin: boolean
+  created_at: string
+}
+
+export interface AIConfig {
+  apiKey: string
+  provider: AIProvider['id']
+  model: string
+}

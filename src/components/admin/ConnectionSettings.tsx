@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Server, Key, Save, Check, Cpu } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Server, Key, Save, Check, Cpu, Loader2 } from 'lucide-react'
 import {
   Card,
   CardContent,
@@ -20,7 +20,6 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import useSettingsStore from '@/stores/useSettingsStore'
 import { AIProvider } from '@/lib/types'
-import { toast } from 'sonner'
 
 export function ConnectionSettings() {
   const {
@@ -30,15 +29,31 @@ export function ConnectionSettings() {
     setProvider,
     selectedModel,
     setModel,
+    isLoading,
+    saveSettings,
   } = useSettingsStore()
 
-  const [tempKey, setTempKey] = useState(apiKey)
+  const [tempKey, setTempKey] = useState('')
+  const [isSaving, setIsSaving] = useState(false)
 
-  const handleSaveSettings = () => {
+  // Sync tempKey when apiKey changes (after loading)
+  useEffect(() => {
+    setTempKey(apiKey)
+  }, [apiKey])
+
+  const handleSaveSettings = async () => {
+    setIsSaving(true)
     setApiKey(tempKey)
-    toast.success('Configurações Salvas', {
-      description: 'As configurações de IA foram atualizadas globalmente.',
-    })
+    await saveSettings()
+    setIsSaving(false)
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-40">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    )
   }
 
   return (
@@ -47,11 +62,12 @@ export function ConnectionSettings() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Server className="h-5 w-5 text-primary" />
-            Provedor de IA Global
+            Provedor de IA Global (Supabase)
           </CardTitle>
           <CardDescription>
             Selecione o provedor de inteligência artificial que será utilizado
-            por todos os usuários do sistema.
+            por todos os usuários do sistema. As configurações são salvas no
+            banco de dados.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -100,7 +116,7 @@ export function ConnectionSettings() {
           </CardTitle>
           <CardDescription>
             Insira a chave de API segura. Esta configuração será aplicada
-            globalmente.
+            globalmente e persistida no Supabase.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -120,14 +136,22 @@ export function ConnectionSettings() {
               )}
             </div>
             <p className="text-xs text-muted-foreground">
-              A chave é armazenada com segurança localmente e usada para todas
-              as requisições.
+              A chave é armazenada com segurança no banco de dados e usada para
+              todas as requisições.
             </p>
           </div>
         </CardContent>
         <CardFooter>
-          <Button onClick={handleSaveSettings} className="ml-auto">
-            <Save className="mr-2 h-4 w-4" />
+          <Button
+            onClick={handleSaveSettings}
+            className="ml-auto"
+            disabled={isSaving}
+          >
+            {isSaving ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Save className="mr-2 h-4 w-4" />
+            )}
             Salvar Configurações
           </Button>
         </CardFooter>

@@ -12,23 +12,32 @@ import {
   CardDescription,
   CardFooter,
 } from '@/components/ui/card'
-import { Lock, User } from 'lucide-react'
+import { Lock, User, Loader2 } from 'lucide-react'
 
 export default function LoginPage() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
   const { login } = useAuthStore()
   const navigate = useNavigate()
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (login(username, password)) {
-      // Redirect based on role? Or just to home/admin
-      if (username === 'Berg') {
-        navigate('/admin')
-      } else {
-        navigate('/')
+    setIsLoading(true)
+    try {
+      const success = await login(username, password)
+      if (success) {
+        // Redirect based on role? Or just to home/admin
+        // Note: currentUser is set in store upon success
+        const role = username === 'Berg' ? 'admin' : 'user' // Simple check for now, ideally check store state
+        if (role === 'admin') {
+          navigate('/admin')
+        } else {
+          navigate('/')
+        }
       }
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -59,6 +68,7 @@ export default function LoginPage() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   autoFocus
+                  disabled={isLoading}
                 />
               </div>
             </div>
@@ -73,13 +83,21 @@ export default function LoginPage() {
                   className="pl-9"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  disabled={isLoading}
                 />
               </div>
             </div>
           </CardContent>
           <CardFooter>
-            <Button type="submit" className="w-full">
-              Entrar
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Entrando...
+                </>
+              ) : (
+                'Entrar'
+              )}
             </Button>
           </CardFooter>
         </form>
