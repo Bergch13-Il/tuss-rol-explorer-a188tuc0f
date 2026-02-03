@@ -9,12 +9,14 @@ import LoginPage from './pages/LoginPage'
 import NotFound from './pages/NotFound'
 import Layout from './components/Layout'
 import { RequireAuth } from './components/RequireAuth'
+import { RemoveBadge } from '@/components/RemoveBadge'
 
 const App = () => (
   <BrowserRouter
     future={{ v7_startTransition: false, v7_relativeSplatPath: false }}
   >
     <TooltipProvider>
+      <RemoveBadge />
       <Toaster />
       <Sonner />
       <Routes>

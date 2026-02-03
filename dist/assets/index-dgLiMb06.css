@@ -2773,6 +2773,18 @@ section[aria-label^='Notifications'] {
   padding: 0 !important;
   margin: 0 !important;
 }
+/* Hide Skip Branding/Watermark globally */
+a[href*='skip.new'],
+a[href*='goskip.app'],
+img[src*='skip.png'],
+img[src*='skip.svg'],
+[aria-label='Criado com o Skip'],
+[aria-label='Created with Skip'] {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+}
 .dark\:prose-invert:is(.dark *){
   --tw-prose-body: var(--tw-prose-invert-body);
   --tw-prose-headings: var(--tw-prose-invert-headings);

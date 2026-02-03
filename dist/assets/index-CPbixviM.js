@@ -31330,7 +31330,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 				value,
 				getSnapshot
 			]);
-			useEffect$7(function() {
+			useEffect$8(function() {
 				checkIfSnapshotChanged(inst) && forceUpdate({ inst });
 				return subscribe$1(function() {
 					checkIfSnapshotChanged(inst) && forceUpdate({ inst });
@@ -31353,7 +31353,7 @@ var require_use_sync_external_store_shim_development = /* @__PURE__ */ __commonJ
 			return getSnapshot();
 		}
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-		var React$5 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$10 = React$5.useState, useEffect$7 = React$5.useEffect, useLayoutEffect$1 = React$5.useLayoutEffect, useDebugValue$1 = React$5.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
+		var React$5 = require_react(), objectIs = "function" === typeof Object.is ? Object.is : is, useState$10 = React$5.useState, useEffect$8 = React$5.useEffect, useLayoutEffect$1 = React$5.useLayoutEffect, useDebugValue$1 = React$5.useDebugValue, didWarnOld18Alpha = !1, didWarnUncachedGetSnapshot = !1, shim = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? useSyncExternalStore$1 : useSyncExternalStore$2;
 		exports.useSyncExternalStore = void 0 !== React$5.useSyncExternalStore ? React$5.useSyncExternalStore : shim;
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
 	})();
@@ -39438,7 +39438,7 @@ var require_with_selector_development = /* @__PURE__ */ __commonJSMin(((exports)
 			return x$1 === y && (0 !== x$1 || 1 / x$1 === 1 / y) || x$1 !== x$1 && y !== y;
 		}
 		"undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-		var React$5 = require_react(), shim = require_shim(), objectIs = "function" === typeof Object.is ? Object.is : is, useSyncExternalStore$1 = shim.useSyncExternalStore, useRef$2 = React$5.useRef, useEffect$7 = React$5.useEffect, useMemo$1 = React$5.useMemo, useDebugValue$1 = React$5.useDebugValue;
+		var React$5 = require_react(), shim = require_shim(), objectIs = "function" === typeof Object.is ? Object.is : is, useSyncExternalStore$1 = shim.useSyncExternalStore, useRef$2 = React$5.useRef, useEffect$8 = React$5.useEffect, useMemo$1 = React$5.useMemo, useDebugValue$1 = React$5.useDebugValue;
 		exports.useSyncExternalStoreWithSelector = function(subscribe$1, getSnapshot, getServerSnapshot, selector, isEqual) {
 			var instRef = useRef$2(null);
 			if (null === instRef.current) {
@@ -39480,7 +39480,7 @@ var require_with_selector_development = /* @__PURE__ */ __commonJSMin(((exports)
 				isEqual
 			]);
 			var value = useSyncExternalStore$1(subscribe$1, instRef[0], instRef[1]);
-			useEffect$7(function() {
+			useEffect$8(function() {
 				inst.hasValue = !0;
 				inst.value = value;
 			}, [value]);
@@ -41521,12 +41521,34 @@ function RequireAuth({ allowedRoles }) {
 	});
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Outlet, {});
 }
+function RemoveBadge() {
+	(0, import_react.useEffect)(() => {
+		const removeSkipBadge = () => {
+			document.querySelectorAll("img[src*=\"skip.png\"], img[src*=\"skip.svg\"]").forEach((img) => {
+				(img.closest("a") || img.closest("div[style*=\"fixed\"]") || img).remove();
+			});
+			document.querySelectorAll("a[href*=\"skip.new\"], a[href*=\"goskip.app\"]").forEach((link) => link.remove());
+			document.querySelectorAll("[aria-label*=\"Criado com o Skip\"], [aria-label*=\"Created with Skip\"]").forEach((el) => el.remove());
+		};
+		removeSkipBadge();
+		const observer = new MutationObserver(() => {
+			removeSkipBadge();
+		});
+		if (document.body) observer.observe(document.body, {
+			childList: true,
+			subtree: true
+		});
+		return () => observer.disconnect();
+	}, []);
+	return null;
+}
 var App = () => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(BrowserRouter, {
 	future: {
 		v7_startTransition: false,
 		v7_relativeSplatPath: false
 	},
 	children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(TooltipProvider, { children: [
+		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(RemoveBadge, {}),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Toaster, {}),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Toaster$1, {}),
 		/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Routes, { children: [
@@ -41574,4 +41596,4 @@ var App = () => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(BrowserRouter, {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-BfZRa7Fy.js.map
+//# sourceMappingURL=index-CPbixviM.js.map
