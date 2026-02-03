@@ -39256,7 +39256,7 @@ function ChatPage() {
 		}
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: "container h-[calc(100vh-4rem)] py-6 flex flex-col max-w-5xl mx-auto",
+		className: "container h-[calc(100vh-4rem)] py-6 flex flex-col max-w-5xl mx-auto animate-fade-in",
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
 			className: "flex-1 flex flex-col overflow-hidden shadow-sm border-0 bg-card",
 			children: [
@@ -40222,9 +40222,9 @@ function LoginPage() {
 		}
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-		className: "min-h-screen flex items-center justify-center bg-muted/30 px-4",
+		className: "min-h-screen flex items-center justify-center bg-gradient-to-br from-muted/50 to-muted/10 px-4 animate-fade-in",
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Card, {
-			className: "w-full max-w-md shadow-lg border-t-4 border-t-primary",
+			className: "w-full max-w-md shadow-lg border-t-4 border-t-primary bg-card",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardHeader, {
 				className: "space-y-1 text-center",
 				children: [
@@ -41504,7 +41504,7 @@ function Layout() {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SettingsProvider, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(DataProvider, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("main", {
 		className: "flex flex-col min-h-screen bg-background",
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Header, {}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-			className: "flex-1",
+			className: "flex-1 w-full",
 			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Outlet, {})
 		})]
 	}) }) });
@@ -41574,4 +41574,4 @@ var App = () => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(BrowserRouter, {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-B2B6f78G.js.map
+//# sourceMappingURL=index-BfZRa7Fy.js.map

@@ -27,9 +27,7 @@ export default function LoginPage() {
     try {
       const success = await login(username, password)
       if (success) {
-        // Redirect based on role? Or just to home/admin
-        // Note: currentUser is set in store upon success
-        const role = username === 'Berg' ? 'admin' : 'user' // Simple check for now, ideally check store state
+        const role = username === 'Berg' ? 'admin' : 'user'
         if (role === 'admin') {
           navigate('/admin')
         } else {
@@ -42,8 +40,8 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
-      <Card className="w-full max-w-md shadow-lg border-t-4 border-t-primary">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-muted/50 to-muted/10 px-4 animate-fade-in">
+      <Card className="w-full max-w-md shadow-lg border-t-4 border-t-primary bg-card">
         <CardHeader className="space-y-1 text-center">
           <div className="mx-auto bg-primary/10 p-3 rounded-full w-fit mb-2">
             <Lock className="h-6 w-6 text-primary" />

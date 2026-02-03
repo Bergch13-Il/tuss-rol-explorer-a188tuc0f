@@ -86,7 +86,7 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="container h-[calc(100vh-4rem)] py-6 flex flex-col max-w-5xl mx-auto">
+    <div className="container h-[calc(100vh-4rem)] py-6 flex flex-col max-w-5xl mx-auto animate-fade-in">
       <Card className="flex-1 flex flex-col overflow-hidden shadow-sm border-0 bg-card">
         <div className="bg-primary/5 p-4 border-b flex items-center justify-between">
           <div className="flex items-center gap-3">

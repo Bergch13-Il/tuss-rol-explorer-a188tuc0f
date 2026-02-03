@@ -1,15 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { SearchBar } from '@/components/SearchBar'
 import { ResultCard } from '@/components/ResultCard'
 import useDataStore from '@/stores/useDataStore'
-import { FileCheck, Activity, Layers, PlayCircle, FileText } from 'lucide-react'
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from '@/components/ui/card'
+import { FileCheck, PlayCircle, FileText } from 'lucide-react'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
@@ -33,9 +27,6 @@ export default function Index() {
   } = useDataStore()
 
   const [showUploader, setShowUploader] = useState(false)
-
-  // Auto-load mock data if empty for demo purposes (optional, or rely on manual action)
-  // For now, we follow the user story: showing Dashboard Cards.
 
   const handleLoadDefault = () => {
     loadData('both')
