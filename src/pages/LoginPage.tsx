@@ -27,8 +27,8 @@ export default function LoginPage() {
     try {
       const success = await login(username, password)
       if (success) {
-        const role = username === 'Berg' ? 'admin' : 'user'
-        if (role === 'admin') {
+        const { currentUser } = useAuthStore.getState()
+        if (currentUser?.role === 'admin') {
           navigate('/admin')
         } else {
           navigate('/')

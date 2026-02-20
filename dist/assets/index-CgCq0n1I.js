@@ -40215,8 +40215,11 @@ function LoginPage() {
 		e.preventDefault();
 		setIsLoading(true);
 		try {
-			if (await login(username, password)) if ((username === "Berg" ? "admin" : "user") === "admin") navigate("/admin");
-			else navigate("/");
+			if (await login(username, password)) {
+				const { currentUser } = useAuthStore.getState();
+				if (currentUser?.role === "admin") navigate("/admin");
+				else navigate("/");
+			}
 		} finally {
 			setIsLoading(false);
 		}
@@ -41596,4 +41599,4 @@ var App = () => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(BrowserRouter, {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-CPbixviM.js.map
+//# sourceMappingURL=index-CgCq0n1I.js.map
