@@ -4,6 +4,7 @@ import { useAuthStore } from '@/stores/useAuthStore'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 import {
   Card,
   CardContent,
@@ -12,18 +13,27 @@ import {
   CardDescription,
   CardFooter,
 } from '@/components/ui/card'
-import { Lock, User, Loader2 } from 'lucide-react'
+import { Lock, User, Loader2, AlertCircle } from 'lucide-react'
 
 export default function LoginPage() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
   const { login } = useAuthStore()
   const navigate = useNavigate()
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (!username || !password) {
+      setError('Por favor, preencha todos os campos.')
+      return
+    }
+
     setIsLoading(true)
+    setError('')
+
     try {
       const success = await login(username, password)
       if (success) {
@@ -33,6 +43,10 @@ export default function LoginPage() {
         } else {
           navigate('/')
         }
+      } else {
+        setError(
+          'Usuário ou senha incorretos. Verifique suas credenciais e tente novamente.',
+        )
       }
     } finally {
       setIsLoading(false)
@@ -55,6 +69,15 @@ export default function LoginPage() {
         </CardHeader>
         <form onSubmit={handleLogin}>
           <CardContent className="space-y-4">
+            {error && (
+              <Alert variant="destructive" className="py-2.5">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription className="ml-2 text-sm">
+                  {error}
+                </AlertDescription>
+              </Alert>
+            )}
+
             <div className="space-y-2">
               <Label htmlFor="username">Login</Label>
               <div className="relative">

@@ -18940,6 +18940,28 @@ var ChevronUp = createLucideIcon("chevron-up", [["path", {
 	d: "m18 15-6-6-6 6",
 	key: "153udz"
 }]]);
+var CircleAlert = createLucideIcon("circle-alert", [
+	["circle", {
+		cx: "12",
+		cy: "12",
+		r: "10",
+		key: "1mglay"
+	}],
+	["line", {
+		x1: "12",
+		x2: "12",
+		y1: "8",
+		y2: "12",
+		key: "1pkeuh"
+	}],
+	["line", {
+		x1: "12",
+		x2: "12.01",
+		y1: "16",
+		y2: "16",
+		key: "4dfq90"
+	}]
+]);
 var CircleCheck = createLucideIcon("circle-check", [["circle", {
 	cx: "12",
 	cy: "12",
@@ -39834,7 +39856,6 @@ const useAuthStore = create()(persist((set, get$1) => ({
 		} catch (error) {
 			console.error("Login error:", error);
 		}
-		toast.error("Credenciais inválidas.");
 		return false;
 	},
 	logout: () => {
@@ -40205,21 +40226,53 @@ function AdminPage() {
 		})]
 	});
 }
+var alertVariants = cva("relative w-full rounded-lg border p-4 [&>svg~*]:pl-7 [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-foreground", {
+	variants: { variant: {
+		default: "bg-background text-foreground",
+		destructive: "border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive"
+	} },
+	defaultVariants: { variant: "default" }
+});
+var Alert = import_react.forwardRef(({ className, variant, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+	ref,
+	role: "alert",
+	className: cn(alertVariants({ variant }), className),
+	...props
+}));
+Alert.displayName = "Alert";
+var AlertTitle = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h5", {
+	ref,
+	className: cn("mb-1 font-medium leading-none tracking-tight", className),
+	...props
+}));
+AlertTitle.displayName = "AlertTitle";
+var AlertDescription = import_react.forwardRef(({ className, ...props }, ref) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+	ref,
+	className: cn("text-sm [&_p]:leading-relaxed", className),
+	...props
+}));
+AlertDescription.displayName = "AlertDescription";
 function LoginPage() {
 	const [username, setUsername] = (0, import_react.useState)("");
 	const [password, setPassword] = (0, import_react.useState)("");
 	const [isLoading, setIsLoading] = (0, import_react.useState)(false);
+	const [error, setError] = (0, import_react.useState)("");
 	const { login } = useAuthStore();
 	const navigate = useNavigate();
 	const handleLogin = async (e) => {
 		e.preventDefault();
+		if (!username || !password) {
+			setError("Por favor, preencha todos os campos.");
+			return;
+		}
 		setIsLoading(true);
+		setError("");
 		try {
 			if (await login(username, password)) {
 				const { currentUser } = useAuthStore.getState();
 				if (currentUser?.role === "admin") navigate("/admin");
 				else navigate("/");
-			}
+			} else setError("Usuário ou senha incorretos. Verifique suas credenciais e tente novamente.");
 		} finally {
 			setIsLoading(false);
 		}
@@ -40245,41 +40298,52 @@ function LoginPage() {
 				onSubmit: handleLogin,
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CardContent, {
 					className: "space-y-4",
-					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "space-y-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label$1, {
-							htmlFor: "username",
-							children: "Login"
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "relative",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-								id: "username",
-								placeholder: "Nome de usuário",
-								className: "pl-9",
-								value: username,
-								onChange: (e) => setUsername(e.target.value),
-								autoFocus: true,
-								disabled: isLoading
+					children: [
+						error && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(Alert, {
+							variant: "destructive",
+							className: "py-2.5",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CircleAlert, { className: "h-4 w-4" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AlertDescription, {
+								className: "ml-2 text-sm",
+								children: error
 							})]
-						})]
-					}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "space-y-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label$1, {
-							htmlFor: "password",
-							children: "Senha"
-						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-							className: "relative",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Lock, { className: "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
-								id: "password",
-								type: "password",
-								placeholder: "••••••••",
-								className: "pl-9",
-								value: password,
-								onChange: (e) => setPassword(e.target.value),
-								disabled: isLoading
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "space-y-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label$1, {
+								htmlFor: "username",
+								children: "Login"
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "relative",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(User, { className: "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									id: "username",
+									placeholder: "Nome de usuário",
+									className: "pl-9",
+									value: username,
+									onChange: (e) => setUsername(e.target.value),
+									autoFocus: true,
+									disabled: isLoading
+								})]
 							})]
-						})]
-					})]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "space-y-2",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Label$1, {
+								htmlFor: "password",
+								children: "Senha"
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "relative",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Lock, { className: "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Input, {
+									id: "password",
+									type: "password",
+									placeholder: "••••••••",
+									className: "pl-9",
+									value: password,
+									onChange: (e) => setPassword(e.target.value),
+									disabled: isLoading
+								})]
+							})]
+						})
+					]
 				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CardFooter, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Button, {
 					type: "submit",
 					className: "w-full",
@@ -41599,4 +41663,4 @@ var App = () => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(BrowserRouter, {
 var App_default = App;
 (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(App_default, {}));
 
-//# sourceMappingURL=index-CgCq0n1I.js.map
+//# sourceMappingURL=index-RThdfBj_.js.map

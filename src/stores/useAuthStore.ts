@@ -34,7 +34,6 @@ export const useAuthStore = create<AuthState>()(
           console.error('Login error:', error)
         }
 
-        toast.error('Credenciais inválidas.')
         return false
       },
 

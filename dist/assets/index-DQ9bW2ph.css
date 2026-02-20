@@ -2294,6 +2294,10 @@ body{
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
 }
+.py-2\.5{
+  padding-top: 0.625rem;
+  padding-bottom: 0.625rem;
+}
 .py-20{
   padding-top: 5rem;
   padding-bottom: 5rem;
